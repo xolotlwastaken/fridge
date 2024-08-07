@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Form, Nav, Navbar, Row, Col } from "react-bootstrap";
+import { Button, Container, Form, Nav, Navbar, Row, Col, Image } from "react-bootstrap";
 import { addDoc, collection } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth"
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
 import { signOut } from "firebase/auth";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 
@@ -16,16 +17,22 @@ export default function AddFoodPage() {
   const [category, setCategory] = useState("");
   const [datePurchased, setDatePurchased] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
+  const [previewImage, setPreviewImage] = useState(
+    "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg"
+  );
   const navigate = useNavigate();
 
   async function addFood() {
+    const imageReference = ref(storage, `images/${image.name}`);
+    const response = await uploadBytes(imageReference, image);
+    const imageUrl = await getDownloadURL(response.ref);
     await addDoc(collection(db, "users", auth.currentUser.uid, "foods"), {
         name, 
-        description,
-        image, 
+        description, 
         category,
         datePurchased,
-        expiryDate
+        expiryDate,
+        image: imageUrl,
     });
     navigate("/");
   }
@@ -39,7 +46,7 @@ export default function AddFoodPage() {
     <>
       <Navbar variant="light" bg="light">
         <Container>
-          <Navbar.Brand href="/">"Fridge"</Navbar.Brand>
+          <Navbar.Brand href="/">"fridge"</Navbar.Brand>
           <Nav>
             <Nav.Link href="/add">New Food</Nav.Link>
             <Nav.Link onClick={(e) => signOut(auth)}>🚪</Nav.Link>
@@ -96,7 +103,7 @@ export default function AddFoodPage() {
                     </Row>
                 </Col>
                 <Col>
-                    <Form.Group className="mb-3" controlId="image">
+                    {/* <Form.Group className="mb-3" controlId="image">
                         <Form.Label>Image URL</Form.Label>
                         <Form.Control
                         type="text"
@@ -107,6 +114,27 @@ export default function AddFoodPage() {
                         <Form.Text className="text-muted">
                         Make sure the url has a image type at the end: jpg, jpeg, png.
                         </Form.Text>
+                    </Form.Group> */}
+
+                    <Image 
+                        src={previewImage}
+                        style={{
+                            objectFit: "cover",
+                            width: "10rem",
+                            height: "10rem",
+                        }}
+                    />
+                    <Form.Group className="mb-3" controlId="image">
+                        <Form.Label>Image</Form.Label>
+                        <Form.Control
+                            type="file"
+                            onChange={(e) => {
+                                const imageFile = e.target.files[0];
+                                const previewImage = URL.createObjectURL(imageFile);
+                                setImage(e.target.files[0]);
+                                setPreviewImage(previewImage);
+                            }}
+                        />
                     </Form.Group>
                     
                     {/* Category drop down */}

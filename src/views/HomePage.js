@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Image, Nav, Navbar, Row } from "react-bootstrap";
+import { Container, Image, Nav, Navbar, Row, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { getDocs, collection } from "firebase/firestore";
 import { db, auth } from "../firebase";
@@ -50,24 +50,47 @@ export default function HomePage() {
 }
 
 function ImageSquare({ post }) {
-  const { image, id } = post;
+  const { image, id, name, expiryDate } = post;
+  const navigate = useNavigate();
+
+  function daysTillExpiry(expiryDate) {
+    const currDate = new Date();
+    const expiry = new Date(expiryDate);
+    var utc1 = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
+    var utc2 = Date.UTC(currDate.getFullYear(), currDate.getMonth(), currDate.getDate());
+
+    // Calculate the time difference in milliseconds
+    let timeDiff = Math.abs(utc2 - utc1);
+
+    // Convert milliseconds to days
+    let daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+    return daysDiff.toString();
+  }
+
   return (
-    <Link
-      to={`food/${id}`}
-      style={{
-        width: "18rem",
+    <Card 
+    onClick={(e) => navigate(`food/${id}`)}
+    style={{ 
+        width: '18rem', 
         marginLeft: "1rem",
         marginTop: "2rem",
-      }}
-    >
-      <Image
-        src={image}
-        style={{
+        cursor: "pointer",
+        padding: "0",
+        }}>
+      <Card.Img 
+        variant="top" 
+        src={image} style={{
           objectFit: "cover",
-          width: "18rem",
-          height: "18rem",
-        }}
-      />
-    </Link>
+          width: '100%',
+          height: "16rem",
+        }}/>
+      <Card.Body>
+        <Card.Title>{name}</Card.Title>
+        <Card.Text class="mb-4">
+          Expiring in: {daysTillExpiry(expiryDate)} days
+        </Card.Text>
+      </Card.Body>
+    </Card>
   );
 }

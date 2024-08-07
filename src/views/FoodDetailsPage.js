@@ -42,9 +42,9 @@ export default function FoodDetailsPage() {
     <>
       <Navbar variant="light" bg="light">
         <Container>
-          <Navbar.Brand href="/">Tinkergram</Navbar.Brand>
+          <Navbar.Brand href="/">"fridge"</Navbar.Brand>
           <Nav>
-            <Nav.Link href="/add">New Post</Nav.Link>
+            <Nav.Link href="/add">New Food</Nav.Link>
             <Nav.Link onClick={(e) => signOut(auth)}>🚪</Nav.Link>
           </Nav>
         </Container>
