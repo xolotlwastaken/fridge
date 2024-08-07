@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { setDoc, doc } from "firebase/firestore";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -48,19 +49,29 @@ export default function RegisterPage() {
 
         <Button variant="primary" onClick={async (e) => {
             SetError("");
-            const canSignup = username && password && password===confirmPassword;
+            const canSignup = username && password && confirmPassword;
             if (canSignup) {
-                try{
-                    await createUserWithEmailAndPassword(auth, username, password);
-                    navigate("/");
-                } catch (error) {
-                    SetError(error.message);
+                if (confirmPassword === password) {
+                    try{
+                        await createUserWithEmailAndPassword(auth, username, password);
+                        await setDoc(doc(db, "users", auth.currentUser.uid), {
+                            uid: auth.currentUser.uid,
+                        });
+                        navigate("/");
+                    } catch (error) {
+                        SetError(error.message);
+                    }
+                } else {
+                    SetError("passwords do not match");
                 }
+                
+            } else {
+                SetError("Plese fill in all fields.");
             }
         }
         }>Sign Up</Button>
       </Form>
-      <p>error</p>
+      <p>{error}</p>
     </Container>
   );
 }

@@ -1,29 +1,42 @@
 import { useEffect, useState } from "react";
 import { Container, Image, Nav, Navbar, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { getDocs, collection } from "firebase/firestore";
+import { db, auth } from "../firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
-  const [posts, setPosts] = useState([]);
+  const [food, setFood] = useState([]);
+  const [user, loading] = useAuthState(auth);
+  const navigate = useNavigate();
 
-   async function getAllPosts() {
-    setPosts([]);
+   async function getAllfood() {
+    const query = await getDocs(collection(db, "users", auth.currentUser.uid, "foods"));
+    const food = query.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+    });
+    setFood(food);
   }
 
   useEffect(() => {
-    getAllPosts();
-  }, []);
+    if (loading) return;
+    if (!user) return navigate("/login");
+    getAllfood();
+
+  }, [navigate, user, loading]);
 
   const ImagesRow = () => {
-    return posts.map((post, index) => <ImageSquare key={index} post={post} />);
+    return food.map((post, index) => <ImageSquare key={index} post={post} />);
   };
 
   return (
     <>
       <Navbar variant="light" bg="light">
         <Container>
-          <Navbar.Brand href="/">Tinkergram</Navbar.Brand>
+          <Navbar.Brand href="/">"fridge"</Navbar.Brand>
           <Nav>
-            <Nav.Link href="/add">New Post</Nav.Link>
+            <Nav.Link href="/add">New Food</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
@@ -40,7 +53,7 @@ function ImageSquare({ post }) {
   const { image, id } = post;
   return (
     <Link
-      to={`post/${id}`}
+      to={`food/${id}`}
       style={{
         width: "18rem",
         marginLeft: "1rem",

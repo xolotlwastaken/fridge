@@ -34,7 +34,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <a href="/signup">Sign up for an account</a>
+          <a href="/register">Sign up for an account</a>
         </Form.Group>
         <Button variant="primary" onClick={async (e) => {
             setError("");
@@ -51,7 +51,7 @@ export default function LoginPage() {
           Login
         </Button>
       </Form>
-      <p>error</p>
+      <p>{error}</p>
     </Container>
   );
 }
