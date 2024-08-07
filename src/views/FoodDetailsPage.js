@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Container, Image, Nav, Navbar, Row, Button } from "react-bootstrap";
+import { Col, Container, Image, Nav, Navbar, Row, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
@@ -11,7 +11,6 @@ export default function FoodDetailsPage() {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState("");
-    const [category, setCategory] = useState("");
     const [datePurchased, setDatePurchased] = useState("");
     const [expiryDate, setExpiryDate] = useState("");
     const navigate = useNavigate();
@@ -23,13 +22,12 @@ export default function FoodDetailsPage() {
     navigate("/");
   }
 
-  async function getPost(id) {
+  async function getFood(id) {
     const foodDocument = await getDoc(doc(db, "users", auth.currentUser.uid, "foods", id));
     const food = foodDocument.data();
     setName(food.name);
     setDescription(food.description);
     setImage(food.image);
-    setCategory(food.category);
     setDatePurchased(food.datePurchased);
     setExpiryDate(food.expiryDate);
   }
@@ -37,7 +35,7 @@ export default function FoodDetailsPage() {
   useEffect(() => {
     if (loading) return;
     if (!user) navigate("/login");
-    getPost(id);
+    getFood(id);
   }, [id, navigate, user, loading]);
 
   return (

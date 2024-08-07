@@ -112,13 +112,13 @@ export default function AddFoodPage() {
                     {/* Category drop down */}
                     Categories
                     <DropdownButton id="dropdown-basic-button" title={category}>
-                        <Dropdown.Item as="button" value="Poultry" onClick={(text) => setCategory(text.target.value)}>Polutry</Dropdown.Item>
-                        <Dropdown.Item as="button" value="Fish" onClick={(text) => setCategory(text.target.value)}>Fish</Dropdown.Item>
-                        <Dropdown.Item as="button" value="Vegetables" onClick={(text) => setCategory(text.target.value)}>Vegetables</Dropdown.Item>
-                        <Dropdown.Item as="button" value="Dairy" onClick={(text) => setCategory(text.target.value)}>Dairy</Dropdown.Item>
-                        <Dropdown.Item as="button" value="Bread" onClick={(text) => setCategory(text.target.value)}>Bread</Dropdown.Item>
-                        <Dropdown.Item as="button" value="Fruits" onClick={(text) => setCategory(text.target.value)}>Fruits</Dropdown.Item>
-                        <Dropdown.Item as="button" value="Others" onClick={(text) => setCategory(text.target.value)}>Others</Dropdown.Item>
+                        <Dropdown.Item type="button" as="button" value="Poultry" onClick={(text) => setCategory(text.target.value)}>Polutry</Dropdown.Item>
+                        <Dropdown.Item type="button" as="button" value="Fish" onClick={(text) => setCategory(text.target.value)}>Fish</Dropdown.Item>
+                        <Dropdown.Item type="button" as="button" value="Vegetables" onClick={(text) => setCategory(text.target.value)}>Vegetables</Dropdown.Item>
+                        <Dropdown.Item type="button" as="button" value="Dairy" onClick={(text) => setCategory(text.target.value)}>Dairy</Dropdown.Item>
+                        <Dropdown.Item type="button" as="button" value="Bread" onClick={(text) => setCategory(text.target.value)}>Bread</Dropdown.Item>
+                        <Dropdown.Item type="button" as="button" value="Fruits" onClick={(text) => setCategory(text.target.value)}>Fruits</Dropdown.Item>
+                        <Dropdown.Item type="button" as="button" value="Others" onClick={(text) => setCategory(text.target.value)}>Others</Dropdown.Item>
                     </DropdownButton>
                 </Col>
             </Row>
