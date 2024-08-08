@@ -1,33 +1,83 @@
 import { useEffect, useState } from "react";
 import { Container, Nav, Navbar, Row, Card } from "react-bootstrap";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, query, where } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
-  const [food, setFood] = useState([]);
+  const [foodCategories, setFoodCategories] = useState({})
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
-
-   async function getAllfood() {
-    const query = await getDocs(collection(db, "users", auth.currentUser.uid, "foods"));
-    const food = query.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
-    });
-    setFood(food);
-  }
 
   useEffect(() => {
     if (loading) return;
     if (!user) return navigate("/login");
-    getAllfood();
-
+    // getAllfood();
+    getAllFood();
   }, [navigate, user, loading]);
 
-  const ImagesRow = () => {
-    return food.map((post, index) => <ImageSquare key={index} post={post} />);
+
+  async function getAllFood() {
+    const categories = ["Poultry", "Fish", "Vegetables", "Dairy", "Bread", "Fruits", "Others"];
+    var foodCategories = {};
+    
+
+    // to sort array by object property
+    function dynamicSort(property) {
+      var sortOrder = 1;
+      if(property[0] === "-") {
+          sortOrder = -1;
+          property = property.substr(1);
+      }
+      return function (a,b) {
+          // sort ascending
+          var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+          return result * sortOrder;
+      }
+    }
+
+    // set foodcategories to be a dictionary of categories with list of foods in that cateories
+    for (const category of categories) {
+      let foods = [];
+      const q = query(collection(db, "users", auth.currentUser.uid, "foods"), where("category", "==", category));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        foods.push({id: doc.id, ...doc.data()});
+      });
+      foodCategories[category] = foods.sort(dynamicSort("expiryDate"));
+    }
+    setFoodCategories(foodCategories);
+    console.log(foodCategories);
+  }
+
+  // Display a row of foods from a single category
+  function CategoryRow(category, foodRow) {
+    return(
+      <>
+      <h3 className="mt-5">{category}</h3>
+      <ImagesRow foodRow={foodRow}/>
+      </>
+    )
+  }
+
+  // Display a row of foods
+  const ImagesRow = ({foodRow}) => {
+    if (foodRow.length !== 0) {
+      return foodRow.map((post, index) => <ImageSquare key={index} post={post} />);
+    } else {
+      return <Container className="mb-5">You do not have any food from this category.</Container>
+    }
   };
+
+  // Display all categories and their foods
+  const FullView = () => {
+    let fullCatView = [];
+    for (var key in foodCategories) {
+      fullCatView.push(CategoryRow(key, foodCategories[key]));
+    }
+    return fullCatView;
+  }
 
   return (
     <>
@@ -41,7 +91,7 @@ export default function HomePage() {
       </Navbar>
       <Container>
         <Row>
-          <ImagesRow />
+          <FullView />
         </Row>
       </Container>
     </>
@@ -73,7 +123,7 @@ function ImageSquare({ post }) {
     style={{ 
         width: '18rem', 
         marginLeft: "1rem",
-        marginTop: "2rem",
+        marginBottom: "2rem",
         cursor: "pointer",
         padding: "0",
         }}>
