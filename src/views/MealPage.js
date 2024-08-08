@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Image, Nav, Navbar, Row, Button } from "react-bootstrap";
+import { Container, Image, Nav, Navbar } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, db } from "../firebase";
+import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 
 export default function MealPage() {
