@@ -118,16 +118,20 @@ function ImageSquare({ post }) {
   function daysTillExpiry(expiryDate) {
     const currDate = new Date();
     const expiry = new Date(expiryDate);
-    var utc1 = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
-    var utc2 = Date.UTC(currDate.getFullYear(), currDate.getMonth(), currDate.getDate());
+    var utc2 = Date.UTC(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
+    var utc1 = Date.UTC(currDate.getFullYear(), currDate.getMonth(), currDate.getDate());
 
     // Calculate the time difference in milliseconds
-    let timeDiff = Math.abs(utc2 - utc1);
+    let timeDiff = utc2 - utc1;
 
-    // Convert milliseconds to days
+    if (timeDiff < 0) {
+      return "expired :(";
+    } else {
+      // Convert milliseconds to days
     let daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
-    return daysDiff.toString();
+    return daysDiff.toString() + " day(s)";
+    }
   }
 
   return (
@@ -149,8 +153,8 @@ function ImageSquare({ post }) {
         }}/>
       <Card.Body>
         <Card.Title>{name}</Card.Title>
-        <Card.Text class="mb-4">
-          Expiring in: {daysTillExpiry(expiryDate)} days
+        <Card.Text className="mb-4">
+          Expiring in: {daysTillExpiry(expiryDate)}
         </Card.Text>
       </Card.Body>
     </Card>

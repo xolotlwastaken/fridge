@@ -44,10 +44,10 @@ export default function ChefPage() {
         </Container>
       </Navbar>
       <Container>
-      <h1 style={{ marginBlock: "1rem" }}>Add Food</h1>
+      <h1 style={{ marginBlock: "1rem" }}>Chef GPT</h1>
         <Form>
                     <Form.Group className="mb-3" controlId="food">
-                        <Form.Label>Choose your food item</Form.Label>
+                        <Form.Label>Select your food item</Form.Label>
                         <Form.Control
                         type="text"
                         placeholder="e.g. chicken"
