@@ -6,14 +6,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
-  const [foodCategories, setFoodCategories] = useState({})
+  const [foodCategories, setFoodCategories] = useState({});
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (loading) return;
     if (!user) return navigate("/login");
-    // getAllfood();
     getAllFood();
   }, [navigate, user, loading]);
 
@@ -73,8 +72,21 @@ export default function HomePage() {
   // Display all categories and their foods
   const FullView = () => {
     let fullCatView = [];
-    for (var key in foodCategories) {
-      fullCatView.push(CategoryRow(key, foodCategories[key]));
+
+    // sort categories by which has the most food items first
+    function sortDictByLength(dict) {
+      return Object.keys(dict)
+        .sort((a, b) => dict[b].length - dict[a].length)
+        .reduce((acc, key) => {
+          acc[key] = dict[key];
+          return acc;
+        }, {});
+    }
+    
+    const sortedDict = sortDictByLength(foodCategories);
+
+    for (var key in sortedDict) {
+      fullCatView.push(CategoryRow(key, sortedDict[key]));
     }
     return fullCatView;
   }
@@ -85,6 +97,7 @@ export default function HomePage() {
         <Container>
           <Navbar.Brand href="/">"fridge"</Navbar.Brand>
           <Nav>
+            <Nav.Link href="/chef">ChefGPT</Nav.Link>
             <Nav.Link href="/add">New Food</Nav.Link>
           </Nav>
         </Container>
